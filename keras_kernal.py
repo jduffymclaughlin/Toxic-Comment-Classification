@@ -48,7 +48,7 @@ def get_model():
 
 model = get_model()
 batch_size = 32
-epochs = 2
+epochs = 1
 
 
 file_path="weights_base.best.hdf5"
