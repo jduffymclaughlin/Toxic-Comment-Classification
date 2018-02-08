@@ -13,7 +13,7 @@ MODEL_DEPTH = 6
 UNKNOWN_CHAR = 'ⓤ'
 PAD_CHAR = '℗'
 BSIZE = 512
-EPOCHS = 4
+EPOCHS = 8
 
 train_data = pd.read_csv("./input/train.csv")
 #train_data = train_data.sample(frac = 0.1)
@@ -56,8 +56,8 @@ def char2seq(texts, maxlen):
 
 char2index, index2char = create_char_vocabulary(sentences_train)
 
-X_train = char2seq(sentences_train,MAXLEN)
-X_test = char2seq(sentences_test,MAXLEN)
+X_train = char2seq(sentences_train, MAXLEN)
+X_test = char2seq(sentences_test, MAXLEN)
 Y_train = train_data[list_classes].values
 
 graph = tf.Graph()
@@ -88,7 +88,7 @@ train_iters = len(X_train) - BSIZE
 with tf.Session(graph=graph) as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
-    for epoch in range(EPOCHS+1):
+    for epoch in range(EPOCHS + 1):
         step = 0
         tf.local_variables_initializer().run(session=sess)
         while step * BSIZE < train_iters:
@@ -97,8 +97,8 @@ with tf.Session(graph=graph) as sess:
             logloss , _, roc_auc = sess.run([loss,optimizer,auc_update_op],feed_dict={x:batch_x,
                                                              y:batch_y,
                                                              is_training:True})
-
-            print('e%s -- s%s -- logloss: %s -- roc_auc: %s' %(epoch,step,logloss,roc_auc))
+            if step % 20 == 0:
+                print('e%s -- s%s -- logloss: %s -- roc_auc: %s' %(epoch,step,logloss,roc_auc))
             step +=1
             
     num_batches = (len(X_test) // BSIZE) + 1
